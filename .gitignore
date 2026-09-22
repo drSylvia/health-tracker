@@ -1,0 +1,19 @@
+# Secrets
+.streamlit/secrets.toml
+.env
+
+# Personal health data
+data/
+*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE / OS
+.vscode/
+.DS_Store
