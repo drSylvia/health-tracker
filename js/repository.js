@@ -1,5 +1,5 @@
-import { trackers, validDate, SCHEMA_VERSION } from './config.js?v=1.1.1';
-import { createStorage } from './storage.js?v=1.1.1';
+import { trackers, validDate, SCHEMA_VERSION } from './config.js?v=1.1.3';
+import { createStorage } from './storage.js?v=1.1.3';
 export function normalize(record) {
   const t = trackers.find(t=>t.id===record.trackerId);
   if(!t || !validDate(record.date)) throw new Error('Invalid tracker or date');
@@ -21,7 +21,8 @@ export function createRepository(storage=createStorage(), syncAdapter=null) {
     async save(record){const r=normalize({...record,deleted:false,updatedAt:new Date().toISOString()}); return mutate(s=>{s.records=s.records.filter(x=>x.id!==r.id);s.records.push(r);return r;});},
     async remove(id){return mutate(s=>{const r=s.records.find(x=>x.id===id);if(!r)return false;Object.assign(r,{deleted:true,value:null,updatedAt:new Date().toISOString()});return true;});},
     async exportBackup(){return {schemaVersion:SCHEMA_VERSION,exportedAt:new Date().toISOString(),records:await records()};},
-    async importBackup(data){if(data?.schemaVersion!==SCHEMA_VERSION||!Array.isArray(data.records))throw new Error('Invalid backup');const incoming=data.records.map(normalize);if(new Set(incoming.map(r=>r.id)).size!==incoming.length)throw new Error('Duplicate records in backup');return mutate(s=>{const map=new Map(s.records.map(r=>[r.id,normalize(r)]));let added=0,conflicts=0;for(const r of incoming){const old=map.get(r.id);if(!old){map.set(r.id,r);added++;}else if(JSON.stringify(old)!==JSON.stringify(r)){conflicts++;}}s.records=[...map.values()];return {added,conflicts};});},
+    async importBackup(data){if(data?.schemaVersion!==SCHEMA_VERSION||!Array.isArray(data.records))throw new Error('Invalid backup');const incoming=data.records.map(normalize);if(new Set(incoming.map(r=>r.id)).size!==incoming.length)throw new Error('Duplicate records in backup');return mutate(s=>{const map=new Map(s.records.map(r=>[r.id,normalize(r)]));let added=0,conflicts=0;for(const r of incoming){const old=map.get(r.id);if(!old){map.set(r.id,r);added++;}else if(old.deleted!==r.deleted||old.value!==r.value){conflicts++;}}s.records=[...map.values()];return {added,conflicts};});},
+    async applySync(expected,incoming){const sorted=rs=>JSON.stringify(rs.map(normalize).sort((a,b)=>a.id.localeCompare(b.id)));return mutate(s=>{if(sorted(s.records)!==sorted(expected))throw new Error("sync-local-changed");s.records=incoming.map(normalize);});},
     async sync(){if(!syncAdapter)return {status:'local-only'};throw new Error('Cloud sync requires V2.2 event protocol');}
   };
 }
