@@ -1,5 +1,5 @@
 // Replace this adapter with IndexedDB in V1.1. Errors deliberately propagate.
-import { STORAGE_KEY, SCHEMA_VERSION } from './config.js?v=1.1.0';
+import { STORAGE_KEY, SCHEMA_VERSION } from './config.js?v=1.1.1';
 export function createStorage(backend = globalThis.localStorage) {
   return {
     async read() {
