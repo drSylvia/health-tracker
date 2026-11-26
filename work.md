@@ -28,3 +28,4 @@ python release.py major	V2.0.0
 python release.py status	查看当前版本
 python release.py 1.5.0	手动指定 V1.5.0
 ```
+
