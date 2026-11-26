@@ -19,3 +19,13 @@ export function validDate(s) {
 }
 
 export const mealIds = Object.freeze(["breakfast","lunch","dinner","snack"]);
+
+// Optional personal reference values; not prescribed health targets.
+export const targetFields = Object.freeze([
+ {id:'weight',key:'weightTarget',step:0.1,max:500,initial:null},
+ {id:'calories',key:'calorieTarget',step:1,max:100000,initial:null},
+ {id:'exercise',key:'exerciseTarget',step:1,max:1440,initial:45},
+ {id:'water',key:'waterTarget',step:1,max:30000,initial:2000},
+ {id:'sleep',key:'sleepTarget',step:0.1,max:24,initial:8}
+]);
+export function validTarget(field,value){return value===null||(typeof value==='number'&&Number.isFinite(value)&&value>=field.step&&value<=field.max&&Math.abs(value/field.step-Math.round(value/field.step))<1e-7);}

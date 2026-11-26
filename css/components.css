@@ -117,3 +117,10 @@ button.danger{color:var(--color-danger);background:var(--color-danger-soft)}
   .metric-card .metric-value > small { font-size: var(--font-size-metric-unit, 1rem); }
   .metric-card > small { font-size: var(--font-size-metric-note, .9375rem); }
 }
+
+/* Optional weight reference: neutral, compact, no progress reward. */
+.weight-target-details{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2) var(--space-3);font-size:var(--font-size-metric-note,.8125rem);}
+.weight-target-stat{display:inline-flex;align-items:baseline;gap:4px;white-space:nowrap;}
+.weight-target-stat strong{font-size:var(--font-size-metric-label,1rem);font-weight:500;font-variant-numeric:tabular-nums;}
+.weight-target-stat + .weight-target-stat{border-inline-start:1px solid var(--color-border);padding-inline-start:var(--space-3);}
+.weight-target-stat + .weight-target-stat strong{color:var(--color-accent-text);}
