@@ -1,0 +1,22 @@
+# Default line ending
+* text=auto eol=lf
+
+# Source code
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.svg text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.webp binary
+*.zip binary
+
+# Windows scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
