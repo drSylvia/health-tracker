@@ -31,3 +31,89 @@ button.danger{color:var(--color-danger);background:var(--color-danger-soft)}
 .history-row .actions{display:flex;gap:var(--space-2);flex-wrap:wrap;}
 .loading{padding:2rem;}
 @media(max-width:359px){.form-grid{grid-template-columns:1fr;}.metric-card{padding:var(--space-3)}}
+
+/* V1.0.1 nutrition card — compact B/V3 layout */
+.nutrition-card {gap:var(--space-4);}
+.nutrition-icon {color:var(--color-metric-exercise);}
+.nutrition-summary {display:flex;align-items:center;gap:var(--space-4);}
+.nutrition-ring {width:96px;height:96px;flex:0 0 96px;}
+.nutrition-details {min-width:0;display:grid;gap:var(--space-3);}
+.nutrition-stats {display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-2) var(--space-3);}
+.nutrition-stat {display:flex;align-items:baseline;gap:4px;white-space:nowrap;font-size:0.875rem;}
+.nutrition-stat strong {font-size:1.125rem;font-weight:500;font-variant-numeric:tabular-nums;}
+.nutrition-stat small {font-size:0.75rem;}
+.nutrition-stat + .nutrition-stat {border-inline-start:1px solid var(--color-border);padding-inline-start:var(--space-3);}
+.nutrition-stat + .nutrition-stat strong {color:var(--color-accent-text);}
+[data-meal="breakfast"]{--meal-color:var(--amber-400);}
+[data-meal="lunch"]{--meal-color:var(--color-metric-exercise);}
+[data-meal="dinner"]{--meal-color:var(--color-metric-water);}
+[data-meal="snack"]{--meal-color:var(--color-metric-sleep);}
+.nutrition-bar {display:flex;height:7px;gap:2px;border-radius:999px;overflow:hidden;background:var(--color-progress-track);}
+.nutrition-bar span {background:var(--meal-color);flex-basis:0;min-width:0;}
+.nutrition-meals {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2);}
+.nutrition-meal {display:grid;gap:4px;min-width:0;}
+.nutrition-label {display:flex;gap:5px;align-items:center;color:var(--color-text-muted);font-size:0.8125rem;overflow-wrap:anywhere;}
+.nutrition-dot {width:7px;height:7px;border-radius:50%;background:var(--meal-color);flex-shrink:0;}
+.nutrition-meal strong {font-size:1.125rem;font-weight:500;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+@media(max-width:560px){.nutrition-summary{gap:var(--space-2)}.nutrition-ring{width:86px;height:86px;flex-basis:86px}.nutrition-stat + .nutrition-stat{border:0;padding:0}.nutrition-stats{column-gap:10px;}}
+@media(max-width:359px){.nutrition-meals{grid-template-columns:repeat(2,minmax(0,1fr));}.nutrition-summary{flex-wrap:wrap;}}
+
+/* Responsive refinement — size by component width, not SVG aspect ratio. */
+.chart-area {min-width:0;}
+.chart-area svg {width:100%;height:160px;max-height:none;}
+.nutrition-card {container-type:inline-size;}
+.nutrition-details {flex:1;}
+.nutrition-ring {width:clamp(86px,16cqi,148px);height:auto;aspect-ratio:1;flex:0 0 auto;}
+.nutrition-details .metric-value {font-size:clamp(1.75rem,5cqi,2.75rem);}
+.nutrition-stat {font-size:clamp(.875rem,1.8cqi,1rem);}
+.nutrition-stat strong {font-size:clamp(1.125rem,2.7cqi,1.5rem);}
+.nutrition-stat small {font-size:clamp(.75rem,1.5cqi,.875rem);}
+.nutrition-meal strong {font-size:clamp(1.125rem,3cqi,1.5rem);}
+.nutrition-label {font-size:clamp(.8125rem,1.8cqi,1rem);}
+@container (min-width:600px) {
+ .nutrition-summary {gap:var(--space-8);}
+ .nutrition-card .nutrition-bar {height:8px;}
+ .nutrition-stats {gap:var(--space-5);}
+}
+@container (max-width:340px) {
+ .nutrition-summary {gap:var(--space-2);}
+ .nutrition-stat + .nutrition-stat {border:0;padding:0;}
+ .nutrition-meals {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(min-width:768px){.chart-area svg{height:180px;}}
+
+/* Responsive typography — retain existing layout, nutrition and chart heights. */
+.metric-head {font-size:var(--font-size-metric-label);font-weight:var(--font-weight-medium);}
+.metric-card .metric-value small {font-size:var(--font-size-metric-unit);}
+.metric-card > small {font-size:var(--font-size-metric-note);}
+.tracker-nav button {font-size:var(--font-size-nav);}
+.chart-area svg text {font-size:var(--font-size-chart-axis);}
+
+/* Metric typography: explicit hierarchy, with fallbacks for older tokens. */
+.metric-card .metric-head {
+  font-size: var(--font-size-metric-label, 1rem);
+  font-weight: 500;
+}
+.metric-card .metric-value {
+  font-size: var(--font-size-metric, 1.875rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+.metric-card .metric-value > small {
+  font-family: var(--font-family-base, sans-serif);
+  font-size: var(--font-size-metric-unit, .875rem);
+  font-weight: 400;
+  line-height: 1.4;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.metric-card > small {
+  font-size: var(--font-size-metric-note, .8125rem);
+  font-weight: 400;
+}
+@media (min-width: 768px) {
+  .metric-card .metric-head { font-size: var(--font-size-metric-label, 1.25rem); }
+  .metric-card .metric-value { font-size: 2.5rem; }
+  .metric-card .metric-value > small { font-size: var(--font-size-metric-unit, 1rem); }
+  .metric-card > small { font-size: var(--font-size-metric-note, .9375rem); }
+}
