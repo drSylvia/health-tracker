@@ -1,6 +1,6 @@
-import {normalize} from './repository.js?v=1.1.3';
-import {SCHEMA_VERSION,targetFields,validTarget} from './config.js?v=1.1.3';
-import {getPreferences,setTargets} from './i18n.js?v=1.1.3';
+import {normalize} from './repository.js?v=1.1.5';
+import {SCHEMA_VERSION,targetFields,validTarget} from './config.js?v=1.1.5';
+import {getPreferences,setTargets} from './i18n.js?v=1.1.5';
 export function validateBackup(data){
  if(data?.schemaVersion!==SCHEMA_VERSION||!Array.isArray(data.records)||!data.targets||typeof data.targets!=='object'||Array.isArray(data.targets)||typeof data.exportedAt!=='string'||!Number.isFinite(Date.parse(data.exportedAt)))throw new Error('invalid-backup');
  const records=data.records.map(r=>{if(!r||typeof r.updatedAt!=='string')throw new Error('invalid-backup');return normalize(r);});
