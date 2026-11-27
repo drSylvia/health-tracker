@@ -1,0 +1,61 @@
+.sync-header-button{display:grid;justify-items:center;gap:3px;background:transparent;color:var(--color-text-muted);font-size:.8rem;padding:6px 8px;white-space:nowrap;margin-inline-start:auto;}
+.sync-header-button .icon{width:26px;height:26px;color:var(--color-metric-exercise);}
+.sync-header-button[data-state="syncDone"] .icon{color:var(--color-metric-weight);}
+.sync-header-button[data-state="autoPaused"] .icon{color:var(--amber-400);}
+.sync-header-button[data-state="autoOffline"] .icon{color:var(--color-text-muted);}
+.sync-conflict-dialog{box-sizing:border-box;width:min(480px,calc(100% - 32px));max-height:85vh;overflow:auto;border:1px solid var(--color-border);border-radius:var(--radius-card);background:var(--color-surface);color:var(--color-text);padding:24px;}
+.sync-conflict-dialog::backdrop{background:rgba(0,0,0,.45);}
+.conflict-option{display:flex;align-items:center;gap:12px;border:1px solid var(--color-border);padding:12px;border-radius:12px;cursor:pointer;}
+.conflict-option:has(input:checked){border-color:var(--color-metric-weight);}
+.conflict-option input{width:20px;height:20px;accent-color:var(--color-primary);}
+.conflict-option div{display:grid;gap:4px;min-width:0;}
+.conflict-option strong{font-size:1.25rem;overflow-wrap:anywhere;}
+
+/* Unified compact panel; preserve all metric units, graph and meal styles. */
+.app-shell{background:var(--color-panel);border-radius:var(--radius-xl);}
+.app-header{flex-wrap:nowrap;gap:12px;margin-bottom:12px;}
+.app-header>div:first-child{min-width:0;flex:1;}
+.app-header h1,.app-header p{margin:0;}
+.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.header-actions .brand-icon{width:44px;height:44px;}
+.header-actions .sync-header-button{margin:0;padding:4px;min-width:48px;}
+.tracker-main{padding:0;background:transparent;}
+.tracker-status:empty{display:none;}
+.tracker-main>.toolbar{gap:8px;margin:0;}
+.metric-card .metric-head{font-weight:600;}
+.metric-card{gap:10px;align-content:start;}
+@media(min-width:768px){.app-shell{margin-block:16px;}.tracker-nav{margin-bottom:12px;}.tracker-nav button{padding:8px;}.header-actions .brand-icon{width:52px;height:52px;}.metric-card{gap:12px;padding:18px;}.tracker-main{gap:14px;}}
+@media(max-width:359px){.header-actions{gap:4px;}.header-actions .brand-icon{width:36px;height:36px;}}
+
+/* Mobile backup controls: prevent intrinsic file input width expanding grid tracks. */
+.tracker-main,
+.tracker-main > .card.stack {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.tracker-main > .card.stack > * {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.tracker-main > .card.stack > input[type="file"] {
+  display: block;
+  width: 100%;
+  font-size: var(--font-size-sm, 0.875rem);
+}
+.tracker-main > .card.stack > button {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767px) {
+  .tracker-main > .card.stack > button,
+  .tracker-main > .card.stack > select {
+    width: 100%;
+  }
+}
+.energy-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.energy-stat{min-width:0;display:flex;flex-direction:column;gap:6px;overflow-wrap:anywhere}.energy-stat .metric-value{font-size:clamp(22px,4vw,36px);margin:0}.energy-balance{padding:12px;border-radius:12px;background:var(--color-progress-track)}@media(max-width:380px){.energy-summary{gap:8px}.energy-stat .metric-value{font-size:22px}}
+.energy-legend{display:flex;flex-wrap:wrap;gap:8px 14px}.energy-legend-item{display:inline-flex;align-items:center;gap:5px}.energy-legend-item>span{width:9px;height:9px;border-radius:2px;flex:none}
+
+/* Four fixed meal color markers, aligned to the four categories; not a proportion chart. */
+.nutrition-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));}
+.nutrition-bar>span{min-width:0;}

@@ -1,0 +1,315 @@
+/* Health Tracker — Design Tokens v1.3
+   Direction: preserve current card layout and overall visual design.
+   Updates in v1.3:
+   - Keep bilingual typography support (zh-CN / en)
+   - Use screenshot-inspired blue-gray palette as key accent for charts and selected states
+   - Add chart/trend line thickness tokens so the weight trend can be thinner
+   - Keep existing green / aqua / purple semantic metric colors for cards
+   Load before style.css. Components should use semantic variables instead of hex values.
+*/
+
+:root {
+  color-scheme: light;
+
+  /* ===== Palette ===== */
+  /* Screenshot-inspired neutrals */
+  --neutral-0: #ffffff;
+  --neutral-25: #fafbfd;
+  --neutral-50: #f5f7fa;
+  --neutral-75: #f0f3f7;
+  --neutral-100: #edf1f5;
+  --neutral-200: #dce2e9;
+  --neutral-300: #c6d1dc;
+  --neutral-500: #6b7280;
+  --neutral-700: #374151;
+  --neutral-900: #111827;
+
+  /* Screenshot-inspired blue-gray accent */
+  --sky-100: #e7f0f9;
+  --sky-200: #d3e3f2;
+  --sky-300: #a9c4e1;
+  --sky-400: #7ca6cd; /* sampled from screenshot button / blue bar */
+  --sky-500: #5f8fbf;
+  --sky-600: #477aa9;
+  --sky-700: #355f86;
+
+  /* Existing supporting palette */
+  --green-300: #a8cbb7;
+  --green-400: #79a98a; /* sampled from screenshot weight bar */
+  --green-700: #386a50;
+  --green-900: #253c34;
+
+  --aqua-300: #b7ebe6;
+  --aqua-400: #81d8d0; /* sampled from screenshot water accent direction */
+  --aqua-500: #5dcbc2;
+  --aqua-700: #17665f;
+
+  --purple-300: #c4afe6;
+  --purple-400: #8266aa; /* sampled from screenshot sleep bar */
+  --purple-700: #5e4690;
+
+  --amber-400: #e5b66c;
+  --red-500: #b42318;
+
+  /* ===== Semantic colors ===== */
+  --color-bg: var(--neutral-0);
+  --color-surface: var(--neutral-0);
+  --color-surface-soft: var(--neutral-25);
+  --color-surface-muted: var(--neutral-100);
+  --color-panel: var(--neutral-50);
+  --color-text: var(--neutral-900);
+  --color-text-muted: var(--neutral-500);
+  --color-border: var(--neutral-200);
+
+  --color-primary: var(--green-900);
+  --color-on-primary: #ffffff;
+  --color-primary-hover: var(--green-700);
+
+  /* Main accent now follows the screenshot blue direction */
+  --color-accent: var(--sky-400);
+  --color-accent-strong: var(--sky-500);
+  --color-accent-soft: var(--sky-100);
+  --color-accent-border: var(--sky-200);
+  --color-accent-text: var(--sky-700);
+  --color-on-accent: #16324a;
+
+  --color-success: var(--green-700);
+  --color-success-soft: #e7f2eb;
+  --color-info: var(--sky-700);
+  --color-info-soft: var(--sky-100);
+  --color-warning: #805309;
+  --color-warning-soft: #fff2d9;
+  --color-danger: var(--red-500);
+  --color-danger-soft: #fce9e7;
+  --color-focus: var(--sky-500);
+
+  /* ===== Metric / chart colors ===== */
+  /* Card metric accents can stay close to the screenshot */
+  --color-metric-weight: var(--green-400);
+  --color-metric-exercise: var(--sky-400);
+  --color-metric-water: var(--aqua-400);
+  --color-metric-sleep: var(--purple-400);
+
+  /* Trend / chart lines */
+  /* Requested: thinner line + use screenshot color for weight trend */
+  --color-chart-weight: var(--sky-400);
+  --color-chart-weight-fill: color-mix(in srgb, var(--sky-400) 14%, transparent);
+  --color-chart-exercise: var(--sky-500);
+  --color-chart-water: var(--aqua-500);
+  --color-chart-sleep: var(--purple-400);
+  --color-chart-grid: var(--neutral-200);
+  --color-chart-axis: var(--neutral-500);
+
+  /* Trend line thickness tokens */
+  --chart-line-width: 1.5;
+  --chart-line-width-emphasis: 2.25;
+  --chart-point-radius: 2;
+  --chart-point-hover-radius: 4;
+  --chart-grid-width: 1;
+  --chart-progress-track: var(--neutral-100);
+
+  /* Progress / mini bars inside cards */
+  --color-progress-track: var(--neutral-100);
+  --progress-height: 8px;
+  --progress-height-thin: 6px;
+
+  /* ===== Typography ===== */
+  --font-family-zh: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", sans-serif;
+  --font-family-en: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-family-base: var(--font-family-zh);
+  --font-sans: var(--font-family-base);
+  --font-family-number: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-metric: 1.875rem;
+  --font-size-metric-label: 1rem;
+  --font-size-metric-unit: 0.875rem;
+  --font-size-metric-note: 0.8125rem;
+  --font-size-nav: 0.8125rem;
+  --font-size-chart-axis: 12px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+
+  /* ===== Spacing ===== */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* ===== Component geometry ===== */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-card: 1rem;
+  --radius-pill: 999px;
+
+  --border-width: 1px;
+  --shadow-card: 0 1px 3px rgb(31 41 55 / 0.05);
+  --shadow-overlay: 0 8px 24px rgb(31 41 55 / 0.12);
+  --focus-ring: 2px solid var(--color-focus);
+  --focus-offset: 3px;
+
+  --touch-target: 44px;
+  --card-padding: var(--space-5);
+  --layout-gap: var(--space-4);
+  --page-padding: var(--space-4);
+  --content-max: 72rem;
+  --sidebar-width: 15rem;
+  --bottom-nav-height: 64px;
+
+  /* ===== Motion ===== */
+  --motion-fast: 120ms;
+  --motion-normal: 200ms;
+  --motion-easing: ease-out;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-padding: var(--space-6);
+    --font-size-base: 1.0625rem;
+    --font-size-lg: 1.375rem;
+    --font-size-xl: 1.875rem;
+    --font-size-metric: 2.5rem;
+    --font-size-metric-label: 1.25rem;
+    --font-size-metric-unit: 1rem;
+    --font-size-metric-note: 0.9375rem;
+    --font-size-nav: 0.9375rem;
+    --font-size-chart-axis: 13px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --color-bg: #161b21;
+    --color-surface: #20262d;
+    --color-surface-soft: #232b33;
+    --color-surface-muted: #2b3440;
+    --color-panel: #1b2229;
+    --color-text: #eff4f7;
+    --color-text-muted: #b0bdc9;
+    --color-border: #394553;
+
+    --color-primary: #a8cbb7;
+    --color-on-primary: #182b22;
+    --color-primary-hover: #c0dfcc;
+
+    --color-accent: #8eb5d9;
+    --color-accent-strong: #a5c9eb;
+    --color-accent-soft: rgba(124, 166, 205, 0.16);
+    --color-accent-border: rgba(124, 166, 205, 0.28);
+    --color-accent-text: #c4daf0;
+    --color-on-accent: #11273a;
+
+    --color-success: #a8cbb7;
+    --color-success-soft: #253c34;
+    --color-info: #c4daf0;
+    --color-info-soft: rgba(124, 166, 205, 0.16);
+    --color-warning: #f2ce8a;
+    --color-warning-soft: #46371e;
+    --color-danger: #ffaaa3;
+    --color-danger-soft: #492b2b;
+    --color-focus: #a5c9eb;
+
+    --color-metric-weight: #a8cbb7;
+    --color-metric-exercise: #8eb5d9;
+    --color-metric-water: #9de5de;
+    --color-metric-sleep: #c4afe6;
+
+    --color-chart-weight: #8eb5d9;
+    --color-chart-weight-fill: color-mix(in srgb, #8eb5d9 18%, transparent);
+    --color-chart-exercise: #a5c9eb;
+    --color-chart-water: #81d8d0;
+    --color-chart-sleep: #c4afe6;
+    --color-chart-grid: #394553;
+    --color-chart-axis: #b0bdc9;
+    --color-progress-track: #2b3440;
+    --chart-progress-track: #2b3440;
+
+    --shadow-card: none;
+    --shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.3);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg: #161b21;
+  --color-surface: #20262d;
+  --color-surface-soft: #232b33;
+  --color-surface-muted: #2b3440;
+  --color-panel: #1b2229;
+  --color-text: #eff4f7;
+  --color-text-muted: #b0bdc9;
+  --color-border: #394553;
+
+  --color-primary: #a8cbb7;
+  --color-on-primary: #182b22;
+  --color-primary-hover: #c0dfcc;
+
+  --color-accent: #8eb5d9;
+  --color-accent-strong: #a5c9eb;
+  --color-accent-soft: rgba(124, 166, 205, 0.16);
+  --color-accent-border: rgba(124, 166, 205, 0.28);
+  --color-accent-text: #c4daf0;
+  --color-on-accent: #11273a;
+
+  --color-success: #a8cbb7;
+  --color-success-soft: #253c34;
+  --color-info: #c4daf0;
+  --color-info-soft: rgba(124, 166, 205, 0.16);
+  --color-warning: #f2ce8a;
+  --color-warning-soft: #46371e;
+  --color-danger: #ffaaa3;
+  --color-danger-soft: #492b2b;
+  --color-focus: #a5c9eb;
+
+  --color-metric-weight: #a8cbb7;
+  --color-metric-exercise: #8eb5d9;
+  --color-metric-water: #9de5de;
+  --color-metric-sleep: #c4afe6;
+
+  --color-chart-weight: #8eb5d9;
+  --color-chart-weight-fill: color-mix(in srgb, #8eb5d9 18%, transparent);
+  --color-chart-exercise: #a5c9eb;
+  --color-chart-water: #81d8d0;
+  --color-chart-sleep: #c4afe6;
+  --color-chart-grid: #394553;
+  --color-chart-axis: #b0bdc9;
+  --color-progress-track: #2b3440;
+  --chart-progress-track: #2b3440;
+
+  --shadow-card: none;
+  --shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-normal: 0ms;
+  }
+}
+
+/* Language-aware base font selection.
+   Set <html lang="zh-CN"> or <html lang="en"> in index.html or switch it dynamically.
+*/
+:root:lang(zh) { --font-family-base: var(--font-family-zh); }
+:root:lang(en) { --font-family-base: var(--font-family-en); }

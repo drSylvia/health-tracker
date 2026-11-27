@@ -1,4 +1,4 @@
-import {mealIds,localDate} from './config.js?v=1.1.12';
+import {mealIds,localDate} from './config.js?v=1.1.17';
 // Net walking energy above resting expenditure; moderate level walking = 3.8 MET.
 export const WALKING_MET = 3.8;
 export function dailyEnergy(records,date,baseline){

@@ -1,0 +1,94 @@
+.sync-header-button{display:grid;justify-items:center;gap:3px;background:transparent;color:var(--color-text-muted);font-size:.8rem;padding:6px 8px;white-space:nowrap;margin-inline-start:auto;}
+.sync-header-button .icon{width:26px;height:26px;color:var(--color-metric-exercise);}
+.sync-header-button[data-state="syncDone"] .icon{color:var(--color-metric-weight);}
+.sync-header-button[data-state="autoPaused"] .icon{color:var(--amber-400);}
+.sync-header-button[data-state="autoOffline"] .icon{color:var(--color-text-muted);}
+.sync-conflict-dialog{box-sizing:border-box;width:min(480px,calc(100% - 32px));max-height:85vh;overflow:auto;border:1px solid var(--color-border);border-radius:var(--radius-card);background:var(--color-surface);color:var(--color-text);padding:24px;}
+.sync-conflict-dialog::backdrop{background:rgba(0,0,0,.45);}
+.conflict-option{display:flex;align-items:center;gap:12px;border:1px solid var(--color-border);padding:12px;border-radius:12px;cursor:pointer;}
+.conflict-option:has(input:checked){border-color:var(--color-metric-weight);}
+.conflict-option input{width:20px;height:20px;accent-color:var(--color-primary);}
+.conflict-option div{display:grid;gap:4px;min-width:0;}
+.conflict-option strong{font-size:1.25rem;overflow-wrap:anywhere;}
+
+/* Unified compact panel; preserve all metric units, graph and meal styles. */
+.app-shell{background:var(--color-panel);border-radius:var(--radius-xl);}
+.app-header{flex-wrap:nowrap;gap:12px;margin-bottom:12px;}
+.app-header>div:first-child{min-width:0;flex:1;}
+.app-header h1,.app-header p{margin:0;}
+.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.header-actions .brand-icon{width:44px;height:44px;}
+.header-actions .sync-header-button{margin:0;padding:4px;min-width:48px;}
+.tracker-main{padding:0;background:transparent;}
+.tracker-status:empty{display:none;}
+.tracker-main>.toolbar{gap:8px;margin:0;}
+.metric-card .metric-head{font-weight:600;}
+.metric-card{gap:10px;align-content:start;}
+@media(min-width:768px){.app-shell{margin-block:16px;}.tracker-nav button{padding:8px;}.header-actions .brand-icon{width:52px;height:52px;}.metric-card{gap:12px;padding:18px;}.tracker-main{gap:14px;}}
+@media(max-width:359px){.header-actions{gap:4px;}.header-actions .brand-icon{width:36px;height:36px;}}
+
+/* Mobile backup controls: prevent intrinsic file input width expanding grid tracks. */
+.tracker-main,
+.tracker-main > .card.stack {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.tracker-main > .card.stack > * {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.tracker-main > .card.stack > input[type="file"] {
+  display: block;
+  width: 100%;
+  font-size: var(--font-size-sm, 0.875rem);
+}
+.tracker-main > .card.stack > button {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767px) {
+  .tracker-main > .card.stack > button,
+  .tracker-main > .card.stack > select {
+    width: 100%;
+  }
+}
+.energy-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.energy-stat{min-width:0;display:flex;flex-direction:column;gap:6px;overflow-wrap:anywhere}.energy-stat .metric-value{font-size:clamp(22px,4vw,36px);margin:0}.energy-balance{padding:12px;border-radius:12px;background:var(--color-progress-track)}@media(max-width:380px){.energy-summary{gap:8px}.energy-stat .metric-value{font-size:22px}}
+.energy-legend{display:flex;flex-wrap:wrap;gap:8px 14px}.energy-legend-item{display:inline-flex;align-items:center;gap:5px}.energy-legend-item>span{width:9px;height:9px;border-radius:2px;flex:none}
+
+/* Four fixed meal color markers, aligned to the four categories; not a proportion chart. */
+.nutrition-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));}
+.nutrition-bar>span{min-width:0;}
+
+/* Dashboard shortcuts: equal-size pills, same actions as detailed cloud panel. */
+.cloud-quick{min-width:0;padding:6px 0 2px;}
+.cloud-quick-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);align-items:stretch;gap:8px;width:100%;max-width:420px;min-width:0;}
+.cloud-quick-state,.cloud-quick-row button{box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;width:100%;min-width:0;max-width:100%;min-height:44px;margin:0;padding:7px 8px;border:1px solid transparent;border-radius:999px;font:inherit;font-size:var(--font-size-sm);font-weight:var(--font-weight-medium);line-height:1.3;white-space:normal;overflow-wrap:anywhere;}
+.cloud-quick-state{background:var(--color-surface-muted);color:var(--color-text-muted);}
+.cloud-quick-state[data-state="syncDone"]{background:var(--color-success-soft);color:var(--color-success);}
+.cloud-quick-state[data-state="cloudWorking"]{background:var(--color-accent-soft);color:var(--color-accent-text);}
+.cloud-quick-state[data-state="autoPaused"],.cloud-quick-state[data-state="autoRetry"],.cloud-quick-state[data-state="syncPending"]{background:var(--color-warning-soft);color:var(--color-warning);}
+.cloud-quick-row button{background:var(--color-surface);border-color:var(--color-border);color:var(--color-text);}
+.cloud-quick-row button[data-quick-action="cloudConnect"],.cloud-quick-row button[data-quick-action="syncNow"]{background:var(--color-accent-soft);color:var(--color-accent-text);border-color:var(--color-accent-border);}
+.cloud-quick-message{margin:6px 0 0;overflow-wrap:anywhere;}
+.cloud-quick-message:empty{display:none;}
+
+/* Dashboard date and cloud controls share one compact toolbar. */
+.dashboard-cloud-quick{padding:0;}
+.dashboard-cloud-tools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;min-width:0;}
+.dashboard-cloud-tools .dashboard-date-picker{box-sizing:border-box;flex:0 1 145px;width:145px;min-width:0;max-width:100%;min-height:44px;border-radius:999px;padding:4px 9px;font-size:var(--font-size-sm);background:var(--color-surface);color:var(--color-text);}
+.dashboard-cloud-tools .cloud-quick-row{flex:0 1 270px;max-width:270px;gap:6px;}
+.dashboard-cloud-tools .cloud-quick-state,.dashboard-cloud-tools .cloud-quick-row button{min-height:44px;padding:4px 5px;}
+.dashboard-cloud-quick .cloud-quick-message{margin:4px 0 0;}
+.app-header h1{overflow-wrap:normal;font-size:clamp(1.3rem,4.5vw,var(--font-size-xl));}
+@media(max-width:600px){.dashboard-cloud-tools .dashboard-date-picker{flex-basis:125px;width:125px;}.dashboard-cloud-tools .cloud-quick-row{flex:1 1 150px;max-width:none;}.dashboard-cloud-tools .cloud-quick-state,.dashboard-cloud-tools .cloud-quick-row button{font-size:0.75rem;padding:3px 2px;}}
+@media(max-width:350px){.dashboard-cloud-tools .dashboard-date-picker{flex-basis:100%;width:100%;}.dashboard-cloud-tools .cloud-quick-row{flex-basis:100%;}}
+
+/* Bottom navigation on every viewport; desktop uses the same fixed navigation as mobile. */
+.tracker-nav{position:fixed;bottom:0;left:0;right:0;z-index:5;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2);margin:0;background:var(--color-surface);border:0;border-top:1px solid var(--color-border);padding:var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));}
+.tracker-nav button{min-width:0;min-height:44px;overflow-wrap:anywhere;}
+.app-shell{padding-bottom:calc(var(--bottom-nav-height) + 2rem + env(safe-area-inset-bottom));}
+@media(min-width:768px){.tracker-nav{padding-inline:max(var(--space-3),calc((100% - var(--content-max)) / 2 + var(--page-padding)));}}
+
+.brand-motto{display:grid;gap:4px;text-align:center;color:var(--color-text-muted);font-size:.875rem;line-height:1.5;padding:8px 0 12px;}
+.brand-motto em{font-style:italic;}

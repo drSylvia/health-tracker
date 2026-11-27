@@ -24,7 +24,7 @@
 .tracker-main>.toolbar{gap:8px;margin:0;}
 .metric-card .metric-head{font-weight:600;}
 .metric-card{gap:10px;align-content:start;}
-@media(min-width:768px){.app-shell{margin-block:16px;}.tracker-nav{margin-bottom:12px;}.tracker-nav button{padding:8px;}.header-actions .brand-icon{width:52px;height:52px;}.metric-card{gap:12px;padding:18px;}.tracker-main{gap:14px;}}
+@media(min-width:768px){.app-shell{margin-block:16px;}.tracker-nav button{padding:8px;}.header-actions .brand-icon{width:52px;height:52px;}.metric-card{gap:12px;padding:18px;}.tracker-main{gap:14px;}}
 @media(max-width:359px){.header-actions{gap:4px;}.header-actions .brand-icon{width:36px;height:36px;}}
 
 /* Mobile backup controls: prevent intrinsic file input width expanding grid tracks. */
@@ -59,3 +59,36 @@
 /* Four fixed meal color markers, aligned to the four categories; not a proportion chart. */
 .nutrition-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));}
 .nutrition-bar>span{min-width:0;}
+
+/* Dashboard shortcuts: equal-size pills, same actions as detailed cloud panel. */
+.cloud-quick{min-width:0;padding:6px 0 2px;}
+.cloud-quick-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);align-items:stretch;gap:8px;width:100%;max-width:420px;min-width:0;}
+.cloud-quick-state,.cloud-quick-row button{box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;width:100%;min-width:0;max-width:100%;min-height:44px;margin:0;padding:7px 8px;border:1px solid transparent;border-radius:999px;font:inherit;font-size:var(--font-size-sm);font-weight:var(--font-weight-medium);line-height:1.3;white-space:normal;overflow-wrap:anywhere;}
+.cloud-quick-state{background:var(--color-surface-muted);color:var(--color-text-muted);}
+.cloud-quick-state[data-state="syncDone"]{background:var(--color-success-soft);color:var(--color-success);}
+.cloud-quick-state[data-state="cloudWorking"]{background:var(--color-accent-soft);color:var(--color-accent-text);}
+.cloud-quick-state[data-state="autoPaused"],.cloud-quick-state[data-state="autoRetry"],.cloud-quick-state[data-state="syncPending"]{background:var(--color-warning-soft);color:var(--color-warning);}
+.cloud-quick-row button{background:var(--color-surface);border-color:var(--color-border);color:var(--color-text);}
+.cloud-quick-row button[data-quick-action="cloudConnect"],.cloud-quick-row button[data-quick-action="syncNow"]{background:var(--color-accent-soft);color:var(--color-accent-text);border-color:var(--color-accent-border);}
+.cloud-quick-message{margin:6px 0 0;overflow-wrap:anywhere;}
+.cloud-quick-message:empty{display:none;}
+
+/* Dashboard date and cloud controls share one compact toolbar. */
+.dashboard-cloud-quick{padding:0;}
+.dashboard-cloud-tools{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;min-width:0;}
+.dashboard-cloud-tools .dashboard-date-picker{box-sizing:border-box;flex:0 1 145px;width:145px;min-width:0;max-width:100%;min-height:44px;border-radius:999px;padding:4px 9px;font-size:var(--font-size-sm);background:var(--color-surface);color:var(--color-text);}
+.dashboard-cloud-tools .cloud-quick-row{flex:0 1 270px;max-width:270px;gap:6px;}
+.dashboard-cloud-tools .cloud-quick-state,.dashboard-cloud-tools .cloud-quick-row button{min-height:44px;padding:4px 5px;}
+.dashboard-cloud-quick .cloud-quick-message{margin:4px 0 0;}
+.app-header h1{overflow-wrap:normal;font-size:clamp(1.3rem,4.5vw,var(--font-size-xl));}
+@media(max-width:600px){.dashboard-cloud-tools .dashboard-date-picker{flex-basis:125px;width:125px;}.dashboard-cloud-tools .cloud-quick-row{flex:1 1 150px;max-width:none;}.dashboard-cloud-tools .cloud-quick-state,.dashboard-cloud-tools .cloud-quick-row button{font-size:0.75rem;padding:3px 2px;}}
+@media(max-width:350px){.dashboard-cloud-tools .dashboard-date-picker{flex-basis:100%;width:100%;}.dashboard-cloud-tools .cloud-quick-row{flex-basis:100%;}}
+
+/* Bottom navigation on every viewport; desktop uses the same fixed navigation as mobile. */
+.tracker-nav{position:fixed;bottom:0;left:0;right:0;z-index:5;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2);margin:0;background:var(--color-surface);border:0;border-top:1px solid var(--color-border);padding:var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));}
+.tracker-nav button{min-width:0;min-height:44px;overflow-wrap:anywhere;}
+.app-shell{padding-bottom:calc(var(--bottom-nav-height) + 2rem + env(safe-area-inset-bottom));}
+@media(min-width:768px){.tracker-nav{padding-inline:max(var(--space-3),calc((100% - var(--content-max)) / 2 + var(--page-padding)));}}
+
+.brand-motto{display:grid;gap:4px;text-align:center;color:var(--color-text-muted);font-size:.875rem;line-height:1.5;padding:8px 0 12px;}
+.brand-motto em{font-style:italic;}
