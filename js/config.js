@@ -6,6 +6,7 @@ export const trackers = Object.freeze([
   { id:'exercise', label:'Exercise', unit:'min', step:1, min:0, max:1440, chart:'bar' },
   { id:'water', label:'Water', unit:'ml', step:1, min:0, max:30000, chart:'bar' },
   { id:'sleep', label:'Sleep', unit:'h', step:0.1, min:0, max:24, chart:'line' },
+  {id:'dailyBaseline',label:'Daily baseline expenditure',unit:'kcal',step:1,min:0,max:100000,type:'energy'},
   {id:'exerciseCalories',label:'Exercise energy',unit:'kcal',step:1,min:0,max:100000,type:'energy'},
   ...['breakfast','lunch','dinner','snack'].map(id=>({id,label:id,unit:'kcal',step:1,min:0,max:100000,type:'meal'})),
   { id:'healthyDiet', label:'Healthy diet', unit:'', type:'boolean' },

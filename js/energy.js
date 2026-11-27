@@ -1,4 +1,4 @@
-import {mealIds,localDate} from './config.js?v=1.1.11';
+import {mealIds,localDate} from './config.js?v=1.1.12';
 // Net walking energy above resting expenditure; moderate level walking = 3.8 MET.
 export const WALKING_MET = 3.8;
 export function dailyEnergy(records,date,baseline){
@@ -15,8 +15,11 @@ export function dailyEnergy(records,date,baseline){
   exercise=exerciseWeight===null?null:Math.round((WALKING_MET-1)*3.5*exerciseWeight/200*minutes);
   exerciseSource=exercise===null?'missingWeight':'walking';
  }
+ const manualBaseline=day.get('dailyBaseline');
+ const baselineSource=typeof manualBaseline==='number'?'manual':baseline==null?'unset':'default';
+ baseline=manualBaseline??baseline;
  const output=baseline!=null&&exercise!==null?baseline+exercise:null;
- return {count,intake,exercise,exerciseSource,exerciseWeight,baseline,output,balance:output!==null?output-intake:null};
+ return {count,intake,exercise,exerciseSource,exerciseWeight,baseline,baselineSource,output,balance:output!==null?output-intake:null};
 }
 export function energySeries(records,baseline,days,end=new Date()){
  const start=new Date(end);start.setDate(start.getDate()-days+1);

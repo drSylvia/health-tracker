@@ -1,4 +1,4 @@
-import {accessToken,forgetToken} from './google-auth.js?v=1.1.11';
+import {accessToken,forgetToken} from './google-auth.js?v=1.1.12';
 export async function testDrive(){
  const token=accessToken();if(!token)throw new Error('expired');
  const url=new URL('https://www.googleapis.com/drive/v3/files');
