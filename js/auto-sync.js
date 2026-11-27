@@ -1,9 +1,9 @@
 // Device-local automation preferences. No credentials or health records are stored here.
-import {accessToken} from './google-auth.js?v=1.1.7';
-import {readSyncState} from './sync-state.js?v=1.1.7';
-import {syncNow} from './sync.js?v=1.1.7';
-import {listBackups,uploadBackup} from './google-drive.js?v=1.1.7';
-import {makeBackup} from './cloud-backup.js?v=1.1.7';
+import {accessToken} from './google-auth.js?v=1.1.8';
+import {readSyncState} from './sync-state.js?v=1.1.8';
+import {syncNow} from './sync.js?v=1.1.8';
+import {listBackups,uploadBackup} from './google-drive.js?v=1.1.8';
+import {makeBackup} from './cloud-backup.js?v=1.1.8';
 const KEY='health-tracker:auto:v1';
 const periods={daily:1,weekly:7,monthly:30};
 export function autoPrefs(){try{const p=JSON.parse(localStorage.getItem(KEY)||'{}');return {sync:p.sync!==false,backup:p.backup!==false,frequency:Object.hasOwn(periods,p.frequency)?p.frequency:'weekly'};}catch{return {sync:true,backup:true,frequency:'weekly'};}}

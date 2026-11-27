@@ -1,11 +1,11 @@
-import {readCache,writeCache,refreshIndex} from './revision-store.js?v=1.1.7';
-import {GOOGLE_CONFIG} from './cloud-config.js?v=1.1.7';
-import {makeBackup,validateBackup} from './cloud-backup.js?v=1.1.7';
-import {listSyncRevisions,downloadBackup,uploadSyncRevision,driveAccount,changeStart,driveChanges} from './google-drive.js?v=1.1.7';
-import {readSyncState,saveSyncState,saveSafety} from './sync-state.js?v=1.1.7';
-import {setTargets} from './i18n.js?v=1.1.7';
-import {accessToken} from './google-auth.js?v=1.1.7';
-import {targetFields} from './config.js?v=1.1.7';
+import {readCache,writeCache,refreshIndex} from './revision-store.js?v=1.1.8';
+import {GOOGLE_CONFIG} from './cloud-config.js?v=1.1.8';
+import {makeBackup,validateBackup} from './cloud-backup.js?v=1.1.8';
+import {listSyncRevisions,downloadBackup,uploadSyncRevision,driveAccount,changeStart,driveChanges,listCheckpoints,uploadCheckpoint} from './google-drive.js?v=1.1.8';
+import {readSyncState,saveSyncState,saveSafety} from './sync-state.js?v=1.1.8';
+import {setTargets} from './i18n.js?v=1.1.8';
+import {accessToken} from './google-auth.js?v=1.1.8';
+import {targetFields} from './config.js?v=1.1.8';
 const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const semantic=r=>r===undefined?undefined:r.deleted?['deleted']:['value',r.value];
 const same=(a,b)=>eq(semantic(a),semantic(b));
@@ -45,24 +45,45 @@ function ancestors(id,nodes){const seen=new Set(),todo=[id];while(todo.length){c
 function commonBase(ids,nodes){if(!ids.length)return null;const sets=ids.map(id=>ancestors(id,nodes));const common=[...sets[0]].filter(id=>sets.every(s=>s.has(id)));const parents=new Set(common.flatMap(id=>nodes.get(id).parents));const maximal=common.filter(id=>!parents.has(id));return maximal.length===1?nodes.get(maximal[0]).data:null;}
 // Account-scoped persistent graph cache. Server versions invalidate modified files.
 let cacheToken=null,revisionCache=new Map(),indexCache=null,accountKey=null;
+let diagnostic=null,checkpointAttempt=0;
+export function syncDiagnostic(){return diagnostic?{...diagnostic}:null;}
+const CHECKPOINT_LIMIT=12_000_000;
+export function checkpointEntries(raw,files,validate=validateRevision){
+ if(raw?.format!==1||!Array.isArray(raw.entries))throw Error('sync-invalid');
+ const expected=new Map(files.map(f=>[f.id,f.version])),out=new Map();
+ for(const entry of raw.entries){if(!Array.isArray(entry)||entry.length!==2)throw Error('sync-invalid');const [id,v]=entry;if(out.has(id))throw Error('sync-invalid');if(expected.has(id)&&expected.get(id)===v?.version)out.set(id,{version:v.version,node:validate(v.raw)});}
+ return out;
+}
+function packed(entries){return [...entries].map(([id,v])=>[id,{version:v.version,raw:{protocol:1,...v.node}}]);}
 const assertToken=token=>{if(!token||accessToken()!==token)throw Error('expired');};
 async function loadGraph(token){
  assertToken(token);
- if(cacheToken!==token){clearRevisionCache();const account=await driveAccount();assertToken(token);accountKey=GOOGLE_CONFIG.clientId+':'+account;cacheToken=token;const saved=await readCache(accountKey);assertToken(token);if(saved?.format===1&&Array.isArray(saved.entries)){try{revisionCache=new Map(saved.entries.map(([id,v])=>[id,{version:v.version,node:validateRevision(v.raw)}]));indexCache=saved.index;}catch{revisionCache.clear();indexCache=null;}}}
+ if(cacheToken!==token){const current=diagnostic;clearRevisionCache();diagnostic=current;const account=await driveAccount();assertToken(token);accountKey=GOOGLE_CONFIG.clientId+':'+account;cacheToken=token;const saved=await readCache(accountKey);assertToken(token);if(saved?.format===1&&Array.isArray(saved.entries)){try{revisionCache=new Map(saved.entries.map(([id,v])=>[id,{version:v.version,node:validateRevision(v.raw)}]));indexCache=saved.index;}catch{revisionCache.clear();indexCache=null;}}}
  const guard=fn=>async(...args)=>{assertToken(token);const result=await fn(...args);assertToken(token);return result;};
  const index=await refreshIndex(indexCache,{start:guard(changeStart),list:guard(listSyncRevisions),changes:guard(driveChanges)});assertToken(token);
- const next=new Map(),nodes=new Map();let changed=false;
- for(const file of index.files){let entry=revisionCache.get(file.id);if(!entry||entry.version!==file.version){const node=validateRevision(await guard(downloadBackup)(file.id));entry={version:file.version,node};changed=true;}next.set(file.id,entry);nodes.set(file.id,entry.node);}
- graphHeads(nodes);assertToken(token);
+ if(diagnostic){diagnostic.mode=index.mode;diagnostic.total=index.files.length;}
+ // Cold device: one packed checkpoint may replace many individual downloads.
+ if(!revisionCache.size&&index.files.length>=20){try{const candidates=await guard(listCheckpoints)();for(const file of candidates){if(Number(file.size)>CHECKPOINT_LIMIT*4)continue;try{if(diagnostic)diagnostic.checkpointDownloads++;const cached=checkpointEntries(await guard(downloadBackup)(file.id),index.files);if(cached.size){revisionCache=cached;break;}}catch{assertToken(token);}}}catch{assertToken(token);}}
+ let next=new Map(),nodes=new Map();let changed=false;
+ for(const file of index.files){let entry=revisionCache.get(file.id);if(!entry||entry.version!==file.version){if(diagnostic)diagnostic.downloads++;const node=validateRevision(await guard(downloadBackup)(file.id));entry={version:file.version,node};changed=true;}else if(diagnostic)diagnostic.hits++;next.set(file.id,entry);nodes.set(file.id,entry.node);}
+ try{graphHeads(nodes);}catch(e){
+ // A malformed checkpoint or local cache must never prevent a clean server rebuild.
+ if(!revisionCache.size)throw e;next=new Map();nodes=new Map();changed=true;
+ for(const file of index.files){if(diagnostic)diagnostic.downloads++;const node=validateRevision(await guard(downloadBackup)(file.id));next.set(file.id,{version:file.version,node});nodes.set(file.id,node);}
+ graphHeads(nodes);
+ }assertToken(token);
  changed ||= next.size!==revisionCache.size||index.cursor!==indexCache?.cursor;
  revisionCache=next;indexCache=index;
- if(changed){await writeCache(accountKey,{format:1,index,entries:[...next].map(([id,v])=>[id,{version:v.version,raw:{protocol:1,...v.node}}])});assertToken(token);}
+ if(changed){const stored=await writeCache(accountKey,{format:1,index,entries:packed(next)});if(diagnostic)diagnostic.storage=stored?"saved":"unavailable";assertToken(token);}
+ // Publish at most once per session hour, and only when enough revisions accumulated.
+ // Best effort only: never delete or replace authoritative revisions.
+ if(next.size>=20&&Date.now()-checkpointAttempt>=3600000){checkpointAttempt=Date.now();try{const recent=await guard(listCheckpoints)();const newest=recent[0];if(!newest||Date.now()-Date.parse(newest.createdTime)>=7*86400000){const payload={format:1,entries:packed(next)};if(JSON.stringify(payload).length<=CHECKPOINT_LIMIT){await guard(uploadCheckpoint)(payload);if(diagnostic)diagnostic.checkpointCreated=true;}}}catch{assertToken(token);}}
  return {nodes};
 }
-export function clearRevisionCache(){revisionCache.clear();cacheToken=null;indexCache=null;accountKey=null;}
+export function clearRevisionCache(){revisionCache.clear();cacheToken=null;indexCache=null;accountKey=null;checkpointAttempt=0;diagnostic=null;}
 let running=false;
 export async function syncNow(repo,choose,approve,canApply=()=>true){
- if(running)throw new Error('sync-busy');running=true;
+ if(running)throw new Error('sync-busy');running=true;const started=performance.now();diagnostic={mode:"unknown",total:0,downloads:0,hits:0,checkpointDownloads:0,checkpointCreated:false,storage:"unchanged",status:"running",at:new Date().toISOString()};
  try{
   const local=await makeBackup(repo),state=readSyncState(),token=accessToken(),{nodes}=await loadGraph(token);
   if(accessToken()!==token)throw new Error("expired");
@@ -89,5 +110,5 @@ export async function syncNow(repo,choose,approve,canApply=()=>true){
   await repo.applySync(local.records,merged.records);
   setTargets(merged.targets);saveSyncState(id);
   let pending=true;try{const after=await loadGraph(token);pending=[...after.nodes.keys()].some(key=>!nodes.has(key)&&key!==id);}catch{}return {...counts,pending};
- }finally{running=false;}
+ }catch(e){if(diagnostic)diagnostic.status="failed";throw e;}finally{if(diagnostic){if(diagnostic.status==="running")diagnostic.status="done";diagnostic.ms=Math.round(performance.now()-started);}running=false;}
 }

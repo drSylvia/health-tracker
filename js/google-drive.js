@@ -1,4 +1,4 @@
-import {accessToken,forgetToken} from './google-auth.js?v=1.1.7';
+import {accessToken,forgetToken} from './google-auth.js?v=1.1.8';
 export async function testDrive(){
  const token=accessToken();if(!token)throw new Error('expired');
  const url=new URL('https://www.googleapis.com/drive/v3/files');
@@ -42,3 +42,13 @@ export async function uploadSyncRevision(data){
 export async function driveAccount(){const d=await request('https://www.googleapis.com/drive/v3/about?fields=user(permissionId)');if(!d.user?.permissionId)throw Error('sync-account');return d.user.permissionId;}
 export async function changeStart(){const d=await request('https://www.googleapis.com/drive/v3/changes/startPageToken');return d.startPageToken;}
 export async function driveChanges(pageToken){const url=new URL('https://www.googleapis.com/drive/v3/changes');url.search=new URLSearchParams({pageToken,spaces:'appDataFolder',includeRemoved:'true',pageSize:'100',fields:'nextPageToken,newStartPageToken,changes(fileId,removed,file(id,name,version,trashed))'});return request(url);}
+
+// Separate immutable acceleration files; older clients ignore them.
+export async function listCheckpoints(){
+ const url=new URL(BASE);url.search=new URLSearchParams({spaces:'appDataFolder',q:"name = 'health-checkpoint.json' and trashed = false",fields:'files(id,createdTime,size)',orderBy:'createdTime desc',pageSize:'3'});return (await request(url)).files||[];
+}
+export async function uploadCheckpoint(data){
+ const boundary='health_'+crypto.randomUUID();const metadata={name:'health-checkpoint.json',parents:['appDataFolder'],mimeType:'application/json'};
+ const body=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n${JSON.stringify(data)}\r\n--${boundary}--\r\n`;
+ return request('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`},body});
+}
