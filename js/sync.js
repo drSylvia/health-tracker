@@ -1,9 +1,9 @@
-import {makeBackup,validateBackup} from './cloud-backup.js?v=1.1.5';
-import {listSyncRevisions,downloadBackup,uploadSyncRevision} from './google-drive.js?v=1.1.5';
-import {readSyncState,saveSyncState,saveSafety} from './sync-state.js?v=1.1.5';
-import {setTargets} from './i18n.js?v=1.1.5';
-import {accessToken} from './google-auth.js?v=1.1.5';
-import {targetFields} from './config.js?v=1.1.5';
+import {makeBackup,validateBackup} from './cloud-backup.js?v=1.1.6';
+import {listSyncRevisions,downloadBackup,uploadSyncRevision} from './google-drive.js?v=1.1.6';
+import {readSyncState,saveSyncState,saveSafety} from './sync-state.js?v=1.1.6';
+import {setTargets} from './i18n.js?v=1.1.6';
+import {accessToken} from './google-auth.js?v=1.1.6';
+import {targetFields} from './config.js?v=1.1.6';
 const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const semantic=r=>r===undefined?undefined:r.deleted?['deleted']:['value',r.value];
 const same=(a,b)=>eq(semantic(a),semantic(b));

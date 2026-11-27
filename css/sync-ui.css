@@ -26,3 +26,30 @@
 .metric-card{gap:10px;align-content:start;}
 @media(min-width:768px){.app-shell{margin-block:16px;}.tracker-nav{margin-bottom:12px;}.tracker-nav button{padding:8px;}.header-actions .brand-icon{width:52px;height:52px;}.metric-card{gap:12px;padding:18px;}.tracker-main{gap:14px;}}
 @media(max-width:359px){.header-actions{gap:4px;}.header-actions .brand-icon{width:36px;height:36px;}}
+
+/* Mobile backup controls: prevent intrinsic file input width expanding grid tracks. */
+.tracker-main,
+.tracker-main > .card.stack {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.tracker-main > .card.stack > * {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.tracker-main > .card.stack > input[type="file"] {
+  display: block;
+  width: 100%;
+  font-size: var(--font-size-sm, 0.875rem);
+}
+.tracker-main > .card.stack > button {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 767px) {
+  .tracker-main > .card.stack > button,
+  .tracker-main > .card.stack > select {
+    width: 100%;
+  }
+}

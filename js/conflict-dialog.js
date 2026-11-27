@@ -1,5 +1,5 @@
-import {t,unit} from './i18n.js?v=1.1.5';
-import {targetFields} from './config.js?v=1.1.5';
+import {t,unit} from './i18n.js?v=1.1.6';
+import {targetFields} from './config.js?v=1.1.6';
 export function chooseConflict(c){return new Promise(resolve=>{
  const dialog=document.createElement('dialog');dialog.className='sync-conflict-dialog';
  const add=(parent,tag,text,cls)=>{const e=document.createElement(tag);e.textContent=text;if(cls)e.className=cls;parent.append(e);return e;};
