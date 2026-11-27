@@ -1,5 +1,5 @@
-import { trackers, validDate, SCHEMA_VERSION } from './config.js?v=1.1.8';
-import { createStorage } from './storage.js?v=1.1.8';
+import { trackers, validDate, SCHEMA_VERSION } from './config.js?v=1.1.11';
+import { createStorage } from './storage.js?v=1.1.11';
 export function normalize(record) {
   const t = trackers.find(t=>t.id===record.trackerId);
   if(!t || !validDate(record.date)) throw new Error('Invalid tracker or date');

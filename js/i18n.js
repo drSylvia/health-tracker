@@ -1,6 +1,6 @@
-import {targetFields,validTarget} from './config.js?v=1.1.8';
-import zh from './locales/zh-CN.js?v=1.1.8';
-import en from './locales/en.js?v=1.1.8';
+import {targetFields,validTarget} from './config.js?v=1.1.11';
+import zh from './locales/zh-CN.js?v=1.1.11';
+import en from './locales/en.js?v=1.1.11';
 const packs={'zh-CN':zh,en};
 const key='health-tracker:preferences';
 let prefs={language:'zh-CN',theme:'system',...Object.fromEntries(targetFields.map(f=>[f.key,f.initial]))};
@@ -11,4 +11,4 @@ export function setPreference(name,value){if(name==='language'&&!Object.hasOwn(p
 export function setTargets(values){const next={...prefs};for(const [key,value] of Object.entries(values)){const field=targetFields.find(f=>f.key===key);if(!field||!validTarget(field,value))throw new Error('Invalid target');next[key]=value;}localStorage.setItem(key,JSON.stringify(next));prefs=next;}
 export function t(key,vars={}){return (packs[prefs.language][key]??zh[key]??key).replace(/\{(\w+)\}/g,(_,k)=>String(vars[k]??''));}
 export function formatDate(date){return new Intl.DateTimeFormat(prefs.language,{month:'long',day:'numeric',weekday:'long'}).format(new Date(date+'T12:00:00'));}
-export function unit(id){return ['breakfast','lunch','dinner','snack','calories'].includes(id)?'kcal':id==='exercise'?t('min'):id==='sleep'?t('h'):id==='water'?'ml':id==='weight'?'kg':'';}
+export function unit(id){return ['breakfast','lunch','dinner','snack','calories','exerciseCalories','dailyEnergy','energyOutput'].includes(id)?'kcal':id==='exercise'?t('min'):id==='sleep'?t('h'):id==='water'?'ml':id==='weight'?'kg':'';}

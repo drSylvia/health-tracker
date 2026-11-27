@@ -6,6 +6,7 @@ export const trackers = Object.freeze([
   { id:'exercise', label:'Exercise', unit:'min', step:1, min:0, max:1440, chart:'bar' },
   { id:'water', label:'Water', unit:'ml', step:1, min:0, max:30000, chart:'bar' },
   { id:'sleep', label:'Sleep', unit:'h', step:0.1, min:0, max:24, chart:'line' },
+  {id:'exerciseCalories',label:'Exercise energy',unit:'kcal',step:1,min:0,max:100000,type:'energy'},
   ...['breakfast','lunch','dinner','snack'].map(id=>({id,label:id,unit:'kcal',step:1,min:0,max:100000,type:'meal'})),
   { id:'healthyDiet', label:'Healthy diet', unit:'', type:'boolean' },
 ]);
@@ -24,6 +25,7 @@ export const mealIds = Object.freeze(["breakfast","lunch","dinner","snack"]);
 export const targetFields = Object.freeze([
  {id:'weight',key:'weightTarget',step:0.1,max:500,initial:null},
  {id:'calories',key:'calorieTarget',step:1,max:100000,initial:null},
+ {id:'dailyEnergy',key:'dailyEnergyTarget',step:1,max:100000,initial:null},
  {id:'exercise',key:'exerciseTarget',step:1,max:1440,initial:45},
  {id:'water',key:'waterTarget',step:1,max:30000,initial:2000},
  {id:'sleep',key:'sleepTarget',step:0.1,max:24,initial:8}

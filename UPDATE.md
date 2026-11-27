@@ -1,9 +1,3 @@
-# V1.1.8 — 同步诊断与云端检查点
-基于 V1.1.7 更新包。覆盖对应文件，保留原有 cloud-config.js、config.js、release.py 和其他资源。无需再次运行 release.py。
+V1.1.11 — Walking energy estimation
 
-- 设置 → 云端数据同步 → 同步诊断（默认折叠）。展示本次会话最近一次同步实际耗时、查询模式、修订下载和缓存命中次数、检查点下载和创建、持久缓存写入情况。次数是整个同步过程累计值，可能包含写入后再次检查；不是独立文件数量。耗时不含之后的自动备份，手动同步含用户选择等待时间。
-- 云端独立 health-checkpoint.json：至少20个修订时，按需生成完整修订图包，最新检查点至少7天后才再创建；会话内最多每小时检查一次（重新授权会重置）。上限1200万 JSON 字符。新设备或空缓存优先尝试最近3个检查点；仅复用 ID 和版本与当前云端索引相符的修订，缺失或变更仍单独下载。图验证失败时重新下载原始修订。检查点并不替代权威修订或独立备份。
-- 不删除云端历史文件，不改变原有合并规则、授权和 UI 布局。不做真正的历史压缩；全量索引、完整图计算和数据大小仍会增长。检查点减少请求次数，未必减少传输字节。超过上限仍回退旧流程。
-- 测试：全部 JS 语法检查，7项纯函数断言（检查点版本过滤、格式、重复 ID、分支、缺失父节点、增量模式、回退模式）。未进行真实 Drive、浏览器、IndexedDB 或完整同步端到端测试。
-
-验收：先导出 JSON；覆盖后检查 V1.1.8。连接 Drive 后同步，展开诊断，刷新再授权并同步；无修改时观察增量模式、修订下载次数。手机修改后检查电脑同步，测试冲突和备份。修订不足20个时没有检查点属于正常行为。不要为了测试删除真实历史。
+Overlay on V1.1.10. Manual exercise energy (including zero) takes precedence. Otherwise estimate net walking energy using 3.8 MET minus 1 MET resting, latest actual weight on or before the record date, and duration. No weight: estimate unavailable, no invented weight. No duration: zero. Estimates are derived, not stored or synced as manual records. History deletion restores auto estimation. Trends use the same calculation and include exercise-duration dates. No schema or credentials changes. No release.py needed.
