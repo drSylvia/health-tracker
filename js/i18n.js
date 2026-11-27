@@ -1,6 +1,6 @@
-import {targetFields,validTarget} from './config.js?v=1.1.6';
-import zh from './locales/zh-CN.js?v=1.1.6';
-import en from './locales/en.js?v=1.1.6';
+import {targetFields,validTarget} from './config.js?v=1.1.7';
+import zh from './locales/zh-CN.js?v=1.1.7';
+import en from './locales/en.js?v=1.1.7';
 const packs={'zh-CN':zh,en};
 const key='health-tracker:preferences';
 let prefs={language:'zh-CN',theme:'system',...Object.fromEntries(targetFields.map(f=>[f.key,f.initial]))};

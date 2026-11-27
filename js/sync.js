@@ -1,9 +1,11 @@
-import {makeBackup,validateBackup} from './cloud-backup.js?v=1.1.6';
-import {listSyncRevisions,downloadBackup,uploadSyncRevision} from './google-drive.js?v=1.1.6';
-import {readSyncState,saveSyncState,saveSafety} from './sync-state.js?v=1.1.6';
-import {setTargets} from './i18n.js?v=1.1.6';
-import {accessToken} from './google-auth.js?v=1.1.6';
-import {targetFields} from './config.js?v=1.1.6';
+import {readCache,writeCache,refreshIndex} from './revision-store.js?v=1.1.7';
+import {GOOGLE_CONFIG} from './cloud-config.js?v=1.1.7';
+import {makeBackup,validateBackup} from './cloud-backup.js?v=1.1.7';
+import {listSyncRevisions,downloadBackup,uploadSyncRevision,driveAccount,changeStart,driveChanges} from './google-drive.js?v=1.1.7';
+import {readSyncState,saveSyncState,saveSafety} from './sync-state.js?v=1.1.7';
+import {setTargets} from './i18n.js?v=1.1.7';
+import {accessToken} from './google-auth.js?v=1.1.7';
+import {targetFields} from './config.js?v=1.1.7';
 const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const semantic=r=>r===undefined?undefined:r.deleted?['deleted']:['value',r.value];
 const same=(a,b)=>eq(semantic(a),semantic(b));
@@ -36,26 +38,33 @@ export async function interactivePlan(local,remote,base,choose){
 export function validateRevision(raw){if(raw?.protocol!==1||!Array.isArray(raw.parents)||raw.parents.some(x=>typeof x!=='string'||!x)||new Set(raw.parents).size!==raw.parents.length)throw new Error('sync-invalid');return {parents:raw.parents,data:validateBackup(raw.data)};}
 export function graphHeads(nodes){
  const referenced=new Set();for(const [id,n] of nodes)for(const p of n.parents){if(p===id||!nodes.has(p))throw new Error('sync-invalid');referenced.add(p);}
- const visiting=new Set(),done=new Set();function visit(id){if(visiting.has(id))throw new Error('sync-invalid');if(done.has(id))return;visiting.add(id);for(const p of nodes.get(id).parents)visit(p);visiting.delete(id);done.add(id);}for(const id of nodes.keys())visit(id);
+ const degrees=new Map([...nodes].map(([id,n])=>[id,n.parents.length])),children=new Map();for(const [id,n] of nodes)for(const p of n.parents){if(!children.has(p))children.set(p,[]);children.get(p).push(id);}const queue=[...degrees].filter(([,d])=>d===0).map(([id])=>id);for(let i=0;i<queue.length;i++)for(const child of children.get(queue[i])||[]){const d=degrees.get(child)-1;degrees.set(child,d);if(d===0)queue.push(child);}if(queue.length!==nodes.size)throw Error('sync-invalid');
  return [...nodes.keys()].filter(id=>!referenced.has(id)).sort();
 }
 function ancestors(id,nodes){const seen=new Set(),todo=[id];while(todo.length){const x=todo.pop();if(seen.has(x))continue;seen.add(x);todo.push(...nodes.get(x).parents);}return seen;}
 function commonBase(ids,nodes){if(!ids.length)return null;const sets=ids.map(id=>ancestors(id,nodes));const common=[...sets[0]].filter(id=>sets.every(s=>s.has(id)));const parents=new Set(common.flatMap(id=>nodes.get(id).parents));const maximal=common.filter(id=>!parents.has(id));return maximal.length===1?nodes.get(maximal[0]).data:null;}
-// Session-only validated immutable revisions. Never reuse across authorization sessions.
-let cacheToken=null,revisionCache=new Map();
-export async function loadRevisions(files,token,download=downloadBackup){
- if(!token)throw new Error('expired');
- if(cacheToken!==token){revisionCache.clear();cacheToken=token;}
- const nodes=new Map();
- for(const file of files){const node=revisionCache.get(file.id)||validateRevision(await download(file.id));nodes.set(file.id,node);}
- graphHeads(nodes);revisionCache=nodes;return nodes;
+// Account-scoped persistent graph cache. Server versions invalidate modified files.
+let cacheToken=null,revisionCache=new Map(),indexCache=null,accountKey=null;
+const assertToken=token=>{if(!token||accessToken()!==token)throw Error('expired');};
+async function loadGraph(token){
+ assertToken(token);
+ if(cacheToken!==token){clearRevisionCache();const account=await driveAccount();assertToken(token);accountKey=GOOGLE_CONFIG.clientId+':'+account;cacheToken=token;const saved=await readCache(accountKey);assertToken(token);if(saved?.format===1&&Array.isArray(saved.entries)){try{revisionCache=new Map(saved.entries.map(([id,v])=>[id,{version:v.version,node:validateRevision(v.raw)}]));indexCache=saved.index;}catch{revisionCache.clear();indexCache=null;}}}
+ const guard=fn=>async(...args)=>{assertToken(token);const result=await fn(...args);assertToken(token);return result;};
+ const index=await refreshIndex(indexCache,{start:guard(changeStart),list:guard(listSyncRevisions),changes:guard(driveChanges)});assertToken(token);
+ const next=new Map(),nodes=new Map();let changed=false;
+ for(const file of index.files){let entry=revisionCache.get(file.id);if(!entry||entry.version!==file.version){const node=validateRevision(await guard(downloadBackup)(file.id));entry={version:file.version,node};changed=true;}next.set(file.id,entry);nodes.set(file.id,entry.node);}
+ graphHeads(nodes);assertToken(token);
+ changed ||= next.size!==revisionCache.size||index.cursor!==indexCache?.cursor;
+ revisionCache=next;indexCache=index;
+ if(changed){await writeCache(accountKey,{format:1,index,entries:[...next].map(([id,v])=>[id,{version:v.version,raw:{protocol:1,...v.node}}])});assertToken(token);}
+ return {nodes};
 }
-export function clearRevisionCache(){revisionCache.clear();cacheToken=null;}
+export function clearRevisionCache(){revisionCache.clear();cacheToken=null;indexCache=null;accountKey=null;}
 let running=false;
 export async function syncNow(repo,choose,approve,canApply=()=>true){
  if(running)throw new Error('sync-busy');running=true;
  try{
-  const local=await makeBackup(repo),state=readSyncState(),token=accessToken(),files=await listSyncRevisions(),nodes=await loadRevisions(files,token);
+  const local=await makeBackup(repo),state=readSyncState(),token=accessToken(),{nodes}=await loadGraph(token);
   if(accessToken()!==token)throw new Error("expired");
   const heads=graphHeads(nodes);
   if(state&&!nodes.has(state.id))throw new Error('sync-account');
@@ -75,10 +84,10 @@ export async function syncNow(repo,choose,approve,canApply=()=>true){
   saveSafety(local);
   // Reuse unchanged single head; otherwise append a revision referencing all observed heads.
   let id=heads.length===1&&fingerprint(merged)===fingerprint(nodes.get(heads[0]).data)?heads[0]:null;
-  if(!id){const result=await uploadSyncRevision({protocol:1,parents:heads,data:merged});if(!result.id)throw new Error('sync-invalid');id=result.id;revisionCache.set(id,validateRevision({protocol:1,parents:heads,data:merged}));}
+  if(!id){const result=await uploadSyncRevision({protocol:1,parents:heads,data:merged});if(!result.id)throw new Error('sync-invalid');id=result.id;}
   if(accessToken()!==token||!canApply()||fingerprint(await makeBackup(repo))!==fingerprint(local))throw new Error('sync-local-changed');
   await repo.applySync(local.records,merged.records);
   setTargets(merged.targets);saveSyncState(id);
-  let pending=true;try{const after=await listSyncRevisions();pending=after.some(f=>!nodes.has(f.id)&&f.id!==id);}catch{}return {...counts,pending};
+  let pending=true;try{const after=await loadGraph(token);pending=[...after.nodes.keys()].some(key=>!nodes.has(key)&&key!==id);}catch{}return {...counts,pending};
  }finally{running=false;}
 }

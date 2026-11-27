@@ -1,4 +1,4 @@
-import {GOOGLE_CONFIG} from './cloud-config.js?v=1.1.6';
+import {GOOGLE_CONFIG} from './cloud-config.js?v=1.1.7';
 let token=null, expires=0, pending=false;
 export const configured=()=>/^[\w-]+\.apps\.googleusercontent\.com$/.test(GOOGLE_CONFIG.clientId);
 export const accessToken=()=>Date.now()<expires?token:null;

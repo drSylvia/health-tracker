@@ -1,4 +1,4 @@
-import {accessToken,forgetToken} from './google-auth.js?v=1.1.6';
+import {accessToken,forgetToken} from './google-auth.js?v=1.1.7';
 export async function testDrive(){
  const token=accessToken();if(!token)throw new Error('expired');
  const url=new URL('https://www.googleapis.com/drive/v3/files');
@@ -30,7 +30,7 @@ export async function downloadBackup(id){return request(`${BASE}/${encodeURIComp
 // Immutable sync revisions: concurrent writes never replace one another.
 export async function listSyncRevisions(){
  const files=[];let pageToken;
- do{const url=new URL(BASE);url.search=new URLSearchParams({spaces:'appDataFolder',q:"name = 'health-sync.json' and trashed = false",fields:'nextPageToken,files(id)',pageSize:'100',...(pageToken?{pageToken}:{})});const data=await request(url);files.push(...(data.files||[]));pageToken=data.nextPageToken;}while(pageToken);
+ do{const url=new URL(BASE);url.search=new URLSearchParams({spaces:'appDataFolder',q:"name = 'health-sync.json' and trashed = false",fields:'nextPageToken,incompleteSearch,files(id,version)',pageSize:'100',...(pageToken?{pageToken}:{})});const data=await request(url);if(data.incompleteSearch)throw new Error('sync-invalid');files.push(...(data.files||[]));pageToken=data.nextPageToken;}while(pageToken);
  return files;
 }
 export async function uploadSyncRevision(data){
@@ -38,3 +38,7 @@ export async function uploadSyncRevision(data){
  const body=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(data)}\r\n--${boundary}--\r\n`;
  return request('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`},body});
 }
+
+export async function driveAccount(){const d=await request('https://www.googleapis.com/drive/v3/about?fields=user(permissionId)');if(!d.user?.permissionId)throw Error('sync-account');return d.user.permissionId;}
+export async function changeStart(){const d=await request('https://www.googleapis.com/drive/v3/changes/startPageToken');return d.startPageToken;}
+export async function driveChanges(pageToken){const url=new URL('https://www.googleapis.com/drive/v3/changes');url.search=new URLSearchParams({pageToken,spaces:'appDataFolder',includeRemoved:'true',pageSize:'100',fields:'nextPageToken,newStartPageToken,changes(fileId,removed,file(id,name,version,trashed))'});return request(url);}
