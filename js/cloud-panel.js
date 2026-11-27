@@ -1,11 +1,11 @@
-import {autoPrefs,setAutoPrefs,automaticSync,backupIfDue} from './auto-sync.js?v=1.1.17';
-import {syncNow,fingerprint,clearRevisionCache,syncDiagnostic} from './sync.js?v=1.1.17';
-import {readSyncState} from './sync-state.js?v=1.1.17';
-import {configured,accessToken,connect,disconnect} from './google-auth.js?v=1.1.17';
-import {testDrive,listBackups,uploadBackup,downloadBackup} from './google-drive.js?v=1.1.17';
-import {makeBackup,validateBackup,compareBackup,restoreBackup} from './cloud-backup.js?v=1.1.17';
-import {chooseConflict} from './conflict-dialog.js?v=1.1.17';
-import {t} from './i18n.js?v=1.1.17';
+import {autoPrefs,setAutoPrefs,automaticSync,backupIfDue} from './auto-sync.js?v=1.2.0';
+import {syncNow,fingerprint,clearRevisionCache,syncDiagnostic} from './sync.js?v=1.2.0';
+import {readSyncState} from './sync-state.js?v=1.2.0';
+import {configured,accessToken,connect,disconnect} from './google-auth.js?v=1.2.0';
+import {testDrive,listBackups,uploadBackup,downloadBackup} from './google-drive.js?v=1.2.0';
+import {makeBackup,validateBackup,compareBackup,restoreBackup} from './cloud-backup.js?v=1.2.0';
+import {chooseConflict} from './conflict-dialog.js?v=1.2.0';
+import {t} from './i18n.js?v=1.2.0';
 let busy=false,message='',detail='',blocked=false,timer=null,lastAttempt=0,ctx=null,panelUpdate=null;
 export function localChanged(){if(!blocked)message='autoReady';ctx?.notify();scheduleAuto();}
 export function autoStatus(){return !navigator.onLine?'autoOffline':!accessToken()?'autoReconnect':blocked?'autoPaused':busy?'cloudWorking':!autoPrefs().sync?'autoOff':message==='cloudError'?'autoRetry':message==='syncPending'?'syncPending':message==='syncDone'?'syncDone':!readSyncState()?'autoFirst':'autoReady';}

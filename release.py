@@ -46,8 +46,8 @@ try:
             sys.exit('Refusing to downgrade version.')
 except (ValueError, KeyError, TypeError) as exc:
     sys.exit(str(exc))
-# Match quoted local CSS, JS and SVG URLs, including existing version suffixes.
-pattern = re.compile(r'''(?P<q>['"])(?P<path>\.{1,2}/[\w./-]+\.(?:css|js|svg))(?:\?v=[\w.-]+)?(?P=q)''')
+# Match quoted local CSS, JS, SVG, PNG and manifest URLs, including existing version suffixes.
+pattern = re.compile(r'''(?P<q>['"])(?P<path>\.{1,2}/[\w./-]+\.(?:css|js|svg|png|webmanifest))(?:\?v=[\w.-]+)?(?P=q)''')
 files = [index, *sorted((root/'css').rglob('*.css')), *sorted((root/'js').rglob('*.js'))]
 changes = {}
 for path in files:

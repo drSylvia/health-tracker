@@ -1,5 +1,5 @@
-import {t,unit} from './i18n.js?v=1.1.17';
-import {localDate} from './config.js?v=1.1.17';
+import {t,unit} from './i18n.js?v=1.2.0';
+import {localDate} from './config.js?v=1.2.0';
 const NS='http://www.w3.org/2000/svg';
 // Measure the actual chart viewport, not a fixed 360-unit canvas.
 const observed = new Map();
